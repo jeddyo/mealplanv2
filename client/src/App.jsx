@@ -1,13 +1,17 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+// Page imports
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import CreateMeal from "./pages/CreateMeal";
 import EditMeal from "./pages/EditMeal";
-import { AuthProvider } from "./context/AuthContext";
 import NotFound from "./pages/NotFound";
+
+// Context
+import { AuthProvider } from "./context/AuthContext";
 
 const App = () => {
   return (
@@ -20,6 +24,7 @@ const App = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create" element={<CreateMeal />} />
           <Route path="/edit/:mealId" element={<EditMeal />} />
+          {/* ✅ Catch-all route for 404s */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
