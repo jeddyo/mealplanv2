@@ -1,92 +1,102 @@
 # 🥗 Meal Planner
 
-**Plan smarter. Eat better.**  
-A full-stack MERN app for creating, editing, saving, and managing your meals — beautifully styled and mobile responsive.
+Plan smarter. Eat better. This full-stack application allows users to log in, create, edit, save, and delete meals with a clean UI and real-time updates — all powered by GraphQL and JWT authentication.
 
 ---
 
 ## 🚀 Live Demo
 
-- 🔗 Frontend: [https://meal-plan-frontend-3a3a.onrender.com](https://meal-plan-frontend-3a3a.onrender.com)
-- 🔗 Backend (GraphQL): [https://meal-plan-7bfa.onrender.com/graphql](https://meal-plan-7bfa.onrender.com/graphql)
+- 🔗 Frontend: [https://meal-plan-frontend-3a3a.onrender.com](https://meal-plan-frontend-3a3a.onrender.com)  
+- 🔗 Backend: [https://meal-plan-7bfa.onrender.com/graphql](https://meal-plan-7bfa.onrender.com/graphql)
 
 ---
 
-## 🖼️ Screenshots
+## 📊 Tech Stack
+
+### Frontend
+- React (Vite)
+- Apollo Client
+- React Router DOM
+- CSS Modules
+
+### Backend
+- Node.js
+- Express.js
+- Apollo Server (GraphQL)
+- MongoDB + Mongoose
+- JWT Authentication
 
 ---
 
-## 🧰 Tech Stack
+## 📦 Features
 
-- **Frontend:** React, Vite, CSS Modules
-- **Backend:** Node.js, Express, Apollo Server, GraphQL
-- **Database:** MongoDB Atlas + Mongoose
-- **Authentication:** JWT + LocalStorage
-- **Hosting:** Render (frontend + backend)
-
----
-
-## ✅ Features
-
-- ✅ User Signup / Login with JWT
-- ✅ Create, Save, Edit, and Delete Meals
-- ✅ Search + Filter Meals
-- ✅ Saved Meals Sidebar
-- ✅ Responsive + Mobile Friendly UI
-- ✅ Pastel styling with animated cards
-- ✅ Protected routes for authenticated users
-- ✅ GraphQL queries & mutations
-- ✅ Deployed backend and frontend via Render
+- 🔐 JWT authentication with secure login/signup
+- 🍽️ Create, edit, delete meals
+- ❤️ Save meals to your personal list
+- 🔍 Search and filter meals
+- 🌟 Clean pastel UI
+- ⚙️ Real-time updates using Apollo cache + refetch
+- 🌐 Fully deployed (frontend + backend)
+- 📄 Clean GitHub repo with `.env`, `.gitignore`, and organized folders
 
 ---
 
 ## 📁 Project Structure
 
+```
 Develop/
-├── client/          # React frontend (Vite)
-│   ├── src/
+├── client/               # React frontend (Vite)
 │   ├── public/
-│   └── package.json
-├── server/          # Node.js backend with GraphQL
+│   ├── src/
+│   │   ├── assets/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── graphql/
+│   │   ├── pages/
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   │   └── index.css
+│   ├── package.json
+│   ├── vite.config.js
+│   └── _redirects         # Handles client-side routing for deployment
+│
+├── server/               # Node backend with GraphQL
 │   ├── graphql/
 │   ├── models/
-│   ├── server.js
-│   └── package.json
+│   └── server.js
+│
+├── .env                  # Environment variables (NOT committed)
+├── .gitignore
+├── package.json          # Backend dependencies
+├── package-lock.json
 └── README.md
----
-
-## ⚙️ Setup Locally
-
-```bash
-# 1. Clone the repo
-git clone https://github.com/your-username/meal-planner.git
-
-# 2. Install dependencies
-cd server && npm install
-cd ../client && npm install
-
-# 3. Setup .env file in /server
-MONGO_URI=your_mongodb_uri
-JWT_SECRET=your_jwt_secret
-
-# 4. Run both servers
-# Backend
-cd server && npm start
-
-# Frontend
-cd ../client && npm run dev
-📎 License
-MIT
-© 2025 John Garcia
-
-Made with love, color palettes, and clean code ✨
-
-yaml
-Copy
-Edit
+```
 
 ---
 
-You’re all set now — paste that into your `README.md`, and your repo will look tight and professional 💼
+## ✅ Requirements Checklist
 
-Let me know if you want a GitHub Action next or just wanna wrap this up for submission!
+- [x] Use **React** for frontend
+- [x] Use **GraphQL** with **Node.js** and **Express.js**
+- [x] Use **MongoDB + Mongoose** for the database
+- [x] Queries + mutations for all CRUD operations
+- [x] **JWT authentication**
+- [x] Polished UI and professional design
+- [x] Fully responsive + mobile-friendly
+- [x] Deployed using **Render** (frontend + backend)
+- [x] One GitHub Action in repo
+- [x] Clean repo structure and quality code
+- [x] Custom CSS (not using Bootstrap)
+
+---
+
+## 📜 License
+
+This project is licensed for educational use.
+
+---
+
+## 🙌 Author
+
+Developed by **John Garcia** during the UCI Full Stack Coding Boot Camp.
+
