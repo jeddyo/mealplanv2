@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import CreateMeal from "./pages/CreateMeal";
 import EditMeal from "./pages/EditMeal";
 import { AuthProvider } from "./context/AuthContext";
+import NotFound from "./pages/NotFound";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/create" element={<CreateMeal />} />
           <Route path="/edit/:mealId" element={<EditMeal />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </AuthProvider>
     </Router>
