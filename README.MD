@@ -99,5 +99,4 @@ This project is licensed for educational use.
 ## 🙌 Author
 
 Developed by **John Garcia** during the UCI Full Stack Coding Boot Camp.
-https://github.com/jeddyo
-
+..
