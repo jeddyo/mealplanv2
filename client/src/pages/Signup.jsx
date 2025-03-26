@@ -15,6 +15,7 @@ const Signup = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -33,36 +34,44 @@ const Signup = () => {
         navigate("/dashboard");
       }
     } catch (error) {
-      alert("Signup failed: " + error.message);
+      setErrorMsg("Signup failed: " + error.message);
     }
   };
 
   return (
-    <div>
-      <h2>Signup</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="auth-container">
+      <h2>Create Account</h2>
+      <form onSubmit={handleSubmit} className="auth-form">
+        <label>Username</label>
         <input
           type="text"
-          placeholder="Username"
+          placeholder="Your name"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
         />
+
+        <label>Email</label>
         <input
           type="email"
-          placeholder="Email"
+          placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+
+        <label>Password</label>
         <input
           type="password"
-          placeholder="Password"
+          placeholder="••••••••"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Signup</button>
+
+        <button type="submit" className="signup">Sign Up</button>
+
+        {errorMsg && <p style={{ color: "red", marginTop: "0.75rem" }}>{errorMsg}</p>}
       </form>
     </div>
   );

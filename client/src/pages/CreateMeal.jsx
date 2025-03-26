@@ -5,52 +5,26 @@ import { useNavigate } from "react-router-dom";
 const CREATE_MEAL = gql`
   mutation CreateMeal(
     $name: String!
-    $category: String!
     $ingredients: [String!]!
     $instructions: String!
+    $category: String!
     $imageUrl: String
   ) {
     createMeal(
       name: $name
-      category: $category
       ingredients: $ingredients
       instructions: $instructions
+      category: $category
       imageUrl: $imageUrl
     ) {
       _id
       name
-      category
-      ingredients
-      instructions
-      imageUrl
-      createdBy {
-        _id
-        username
-      }
-    }
-  }
-`;
-
-const GET_MEALS = gql`
-  query GetMeals {
-    meals {
-      _id
-      name
-      category
-      ingredients
-      instructions
-      imageUrl
-      createdBy {
-        _id
-        username
-      }
     }
   }
 `;
 
 const CreateMeal = () => {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     name: "",
     category: "",
@@ -59,135 +33,48 @@ const CreateMeal = () => {
     imageUrl: "",
   });
 
-  const [createMeal, { loading, error }] = useMutation(CREATE_MEAL, {
-    update(cache, { data: { createMeal } }) {
-      try {
-        const existingData = cache.readQuery({ query: GET_MEALS });
-
-        if (existingData && existingData.meals) {
-          cache.writeQuery({
-            query: GET_MEALS,
-            data: {
-              meals: [...existingData.meals, createMeal],
-            },
-          });
-        }
-      } catch (err) {
-        console.warn(
-          "GET_MEALS query not found in cache — skipping cache update."
-        );
-      }
-    },
-    onCompleted: () => {
-      navigate("/dashboard");
-    },
+  const [createMeal, { error }] = useMutation(CREATE_MEAL, {
+    onCompleted: () => navigate("/dashboard"),
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const ingredientsArray = formData.ingredients
-      .split(",")
-      .map((item) => item.trim())
-      .filter((item) => item !== "");
-
     createMeal({
       variables: {
         name: formData.name,
         category: formData.category,
-        ingredients: ingredientsArray,
+        ingredients: formData.ingredients.split(",").map((item) => item.trim()),
         instructions: formData.instructions,
-        imageUrl: formData.imageUrl || null,
+        imageUrl: formData.imageUrl,
       },
     });
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white shadow-md rounded-md mt-6">
-      <h2 className="text-2xl font-bold mb-4">Create a New Meal</h2>
+    <div className="form-container">
+      <h2>Create a New Meal</h2>
+      <form onSubmit={handleSubmit} className="styled-form">
+        <label>Name</label>
+        <input name="name" value={formData.name} onChange={handleChange} required />
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block font-medium">Name</label>
-          <input
-            type="text"
-            name="name"
-            required
-            value={formData.name}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-        </div>
+        <label>Category</label>
+        <input name="category" value={formData.category} onChange={handleChange} required />
 
-        <div>
-          <label className="block font-medium">Category</label>
-          <input
-            type="text"
-            name="category"
-            required
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-        </div>
+        <label>Ingredients (comma-separated)</label>
+        <input name="ingredients" value={formData.ingredients} onChange={handleChange} required />
 
-        <div>
-          <label className="block font-medium">
-            Ingredients (comma-separated)
-          </label>
-          <input
-            type="text"
-            name="ingredients"
-            required
-            value={formData.ingredients}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-        </div>
+        <label>Instructions</label>
+        <textarea name="instructions" value={formData.instructions} onChange={handleChange} required />
 
-        <div>
-          <label className="block font-medium">Instructions</label>
-          <textarea
-            name="instructions"
-            required
-            value={formData.instructions}
-            onChange={handleChange}
-            rows={4}
-            className="w-full border p-2 rounded"
-          ></textarea>
-        </div>
+        <label>Image URL (optional)</label>
+        <input name="imageUrl" value={formData.imageUrl} onChange={handleChange} />
 
-        <div>
-          <label className="block font-medium">Image URL (optional)</label>
-          <input
-            type="text"
-            name="imageUrl"
-            value={formData.imageUrl}
-            onChange={handleChange}
-            className="w-full border p-2 rounded"
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          {loading ? "Creating..." : "Create Meal"}
-        </button>
-
-        {error && (
-          <p className="text-red-500 mt-2">Error creating meal: {error.message}</p>
-        )}
+        <button type="submit">Create Meal</button>
+        {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
       </form>
     </div>
   );

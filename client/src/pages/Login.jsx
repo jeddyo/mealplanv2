@@ -18,6 +18,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const [loginMutation] = useMutation(LOGIN_MUTATION);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,29 +33,35 @@ const Login = () => {
         navigate("/dashboard");
       }
     } catch (error) {
-      alert("Login failed: " + error.message);
+      setErrorMsg("Login failed: " + error.message);
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="auth-container">
+      <h2>Welcome Back</h2>
+      <form onSubmit={handleSubmit} className="auth-form">
+        <label>Email</label>
         <input
           type="email"
-          placeholder="Email"
+          placeholder="you@example.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+
+        <label>Password</label>
         <input
           type="password"
-          placeholder="Password"
+          placeholder="••••••••"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Login</button>
+
+        <button type="submit" className="login">Log In</button>
+
+        {errorMsg && <p style={{ color: "red", marginTop: "0.75rem" }}>{errorMsg}</p>}
       </form>
     </div>
   );
