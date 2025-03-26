@@ -8,14 +8,14 @@ const resolvers = {
     me: async (_, __, context) => {
       const token = context?.req?.headers?.authorization?.split(" ")[1];
       if (!token) throw new Error("Unauthorized");
-
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       return await User.findById(decoded.userId).populate("savedMeals");
     },
     meals: async () => {
-      return await Meal.find();
+      return await Meal.find().populate("createdBy", "username email");
     },
   },
+
   Mutation: {
     signup: async (_, { username, email, password }) => {
       const existingUser = await User.findOne({ email });
@@ -46,6 +46,47 @@ const resolvers = {
       return { token };
     },
 
+    createMeal: async (
+      _,
+      { name, ingredients, instructions, category, imageUrl },
+      context
+    ) => {
+      const token = context?.req?.headers?.authorization?.split(" ")[1];
+      if (!token) throw new Error("Unauthorized");
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      const meal = new Meal({
+        name,
+        ingredients,
+        instructions,
+        category,
+        imageUrl,
+        createdBy: decoded.userId,
+      });
+
+      await meal.save();
+      await meal.populate("createdBy", "username email"); // ✅ Populate here
+
+      return meal;
+    },
+
+    deleteMeal: async (_, { mealId }, context) => {
+      const token = context?.req?.headers?.authorization?.split(" ")[1];
+      if (!token) throw new Error("Unauthorized");
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const meal = await Meal.findById(mealId);
+      if (!meal) throw new Error("Meal not found");
+
+      if (meal.createdBy.toString() !== decoded.userId) {
+        throw new Error("You do not have permission to delete this meal");
+      }
+
+      await Meal.findByIdAndDelete(mealId);
+      return true;
+    },
+
     saveMeal: async (_, { mealId }, context) => {
       const token = context?.req?.headers?.authorization?.split(" ")[1];
       if (!token) throw new Error("Unauthorized");
@@ -70,9 +111,7 @@ const resolvers = {
       const user = await User.findById(decoded.userId);
       if (!user) throw new Error("User not found");
 
-      user.savedMeals = user.savedMeals.filter(
-        (id) => id.toString() !== mealId
-      );
+      user.savedMeals = user.savedMeals.filter((id) => id.toString() !== mealId);
       await user.save();
 
       return await user.populate("savedMeals");

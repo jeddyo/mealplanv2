@@ -1,11 +1,14 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { AuthContext } from "../context/AuthContext";
+import MealCard from "../components/MealCard";
+import SavedMealCard from "../components/SavedMealCard";
 
 const GET_ME = gql`
   query GetMe {
     me {
+      _id
       username
       savedMeals {
         _id
@@ -13,6 +16,7 @@ const GET_ME = gql`
         category
         ingredients
         instructions
+        imageUrl
       }
     }
   }
@@ -26,6 +30,11 @@ const GET_MEALS = gql`
       category
       ingredients
       instructions
+      imageUrl
+      createdBy {
+        _id
+        username
+      }
     }
   }
 `;
@@ -33,13 +42,9 @@ const GET_MEALS = gql`
 const SAVE_MEAL = gql`
   mutation SaveMeal($mealId: ID!) {
     saveMeal(mealId: $mealId) {
-      username
       savedMeals {
         _id
         name
-        category
-        ingredients
-        instructions
       }
     }
   }
@@ -48,86 +53,98 @@ const SAVE_MEAL = gql`
 const REMOVE_MEAL = gql`
   mutation RemoveMeal($mealId: ID!) {
     removeMeal(mealId: $mealId) {
-      username
       savedMeals {
         _id
         name
-        category
-        ingredients
-        instructions
       }
     }
+  }
+`;
+
+const DELETE_MEAL = gql`
+  mutation DeleteMeal($mealId: ID!) {
+    deleteMeal(mealId: $mealId)
   }
 `;
 
 const Dashboard = () => {
   const { logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
 
-  const { loading: mealsLoading, error: mealsError, data: mealsData } = useQuery(GET_MEALS);
-  const { loading: meLoading, error: meError, data: meData, refetch } = useQuery(GET_ME);
+  const { loading: mealsLoading, data: mealsData, refetch: refetchMeals } = useQuery(GET_MEALS);
+  const { loading: meLoading, data: meData, refetch: refetchMe } = useQuery(GET_ME);
 
-  const [saveMeal] = useMutation(SAVE_MEAL, {
-    onCompleted: () => refetch(),
+  const [saveMeal] = useMutation(SAVE_MEAL, { onCompleted: refetchMe });
+  const [removeMeal] = useMutation(REMOVE_MEAL, { onCompleted: refetchMe });
+  const [deleteMeal] = useMutation(DELETE_MEAL, {
+    onCompleted: () => {
+      refetchMeals();
+      refetchMe();
+    },
   });
-
-  const [removeMeal] = useMutation(REMOVE_MEAL, {
-    onCompleted: () => refetch(),
-  });
-
-  useEffect(() => {
-    if (meError) {
-      console.error("Error fetching user data:", meError.message);
-    }
-  }, [meError]);
 
   if (meLoading || mealsLoading) return <p>Loading...</p>;
-  if (meError || mealsError) return <p>Error loading data.</p>;
+  if (!meData?.me || !mealsData?.meals) return <p>Error loading meals</p>;
 
-  const handleSave = (mealId) => {
-    saveMeal({ variables: { mealId } });
-  };
+  const userId = meData.me._id;
+  const savedMeals = meData.me.savedMeals;
+  const meals = mealsData.meals;
 
-  const handleRemove = (mealId) => {
-    removeMeal({ variables: { mealId } });
-  };
-
-  const savedMeals = meData?.me?.savedMeals || [];
+  const filteredMeals = meals.filter((meal) =>
+    meal.name.toLowerCase().includes(search.toLowerCase()) ||
+    meal.category.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div>
-      <h2>Dashboard</h2>
-      <button onClick={() => { logout(); navigate("/login"); }}>Logout</button>
+    <div className="container">
+      <div className="header">
+        <h1>Meal Planner</h1>
+        <div className="button-group">
+          <button className="save" onClick={() => navigate("/create")}>Create Meal</button>
+          <button className="delete" onClick={() => { logout(); navigate("/login"); }}>Logout</button>
+        </div>
+      </div>
 
-      <h3>Available Meals</h3>
-      {mealsData?.meals.map((meal) => (
-        <div key={meal._id} style={{ border: "1px solid #ccc", marginBottom: "15px", padding: "10px" }}>
-          <h4>{meal.name}</h4>
-          <p><strong>Category:</strong> {meal.category}</p>
-          <p><strong>Ingredients:</strong> {meal.ingredients.join(", ")}</p>
-          <p><strong>Instructions:</strong> {meal.instructions}</p>
-          {savedMeals.some((saved) => saved._id === meal._id) ? (
-            <button onClick={() => handleRemove(meal._id)}>Remove Meal</button>
+      <input
+        type="text"
+        className="search"
+        placeholder="Search meals..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      <div className="dashboard-layout">
+        <div className="main-content">
+          <h2 className="section-title">Available Meals</h2>
+          {filteredMeals.map((meal) => (
+            <MealCard
+              key={meal._id}
+              meal={meal}
+              userId={userId}
+              savedMeals={savedMeals}
+              onSave={(id) => saveMeal({ variables: { mealId: id } })}
+              onRemove={(id) => removeMeal({ variables: { mealId: id } })}
+              onDelete={(id) => {
+                if (window.confirm("Are you sure you want to delete this meal?")) {
+                  deleteMeal({ variables: { mealId: id } });
+                }
+              }}
+            />
+          ))}
+        </div>
+
+        <div className="sidebar">
+          <h2 className="section-title">Saved Meals</h2>
+          {savedMeals.length > 0 ? (
+            savedMeals.map((meal) => (
+              <SavedMealCard key={meal._id} meal={meal} />
+            ))
           ) : (
-            <button onClick={() => handleSave(meal._id)}>Save Meal</button>
+            <p>No saved meals yet.</p>
           )}
         </div>
-      ))}
-
-      <h3>Saved Meals:</h3>
-      {savedMeals.length > 0 ? (
-        <ul>
-          {savedMeals.map((meal) => (
-            <li key={meal._id}>
-              <strong>{meal.name}</strong> - {meal.category}
-              <p><strong>Ingredients:</strong> {meal.ingredients.join(", ")}</p>
-              <p><strong>Instructions:</strong> {meal.instructions}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No meals saved yet.</p>
-      )}
+      </div>
     </div>
   );
 };

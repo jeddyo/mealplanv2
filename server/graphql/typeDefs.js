@@ -14,6 +14,8 @@ const typeDefs = gql`
     category: String
     instructions: String
     ingredients: [String]
+    imageUrl: String
+    createdBy: User
   }
 
   type AuthPayload {
@@ -30,6 +32,8 @@ const typeDefs = gql`
     signup(username: String!, email: String!, password: String!): AuthPayload
     saveMeal(mealId: ID!): User
     removeMeal(mealId: ID!): User
+    createMeal(name: String!, ingredients: [String!]!, instructions: String!, category: String!, imageUrl: String): Meal
+    deleteMeal(mealId: ID!): Boolean
   }
 `;
 

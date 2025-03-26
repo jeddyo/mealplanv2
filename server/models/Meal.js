@@ -19,7 +19,12 @@ const mealSchema = new mongoose.Schema({
   },
   imageUrl: {
     type: String,
-    required: false, // Optional field
+    required: false,
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
   },
 });
 
