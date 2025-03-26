@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, gql } from "@apollo/client";
 import { AuthContext } from "../context/AuthContext";
@@ -72,8 +72,21 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
 
-  const { loading: mealsLoading, data: mealsData, refetch: refetchMeals } = useQuery(GET_MEALS);
-  const { loading: meLoading, data: meData, refetch: refetchMe } = useQuery(GET_ME);
+  const {
+    loading: mealsLoading,
+    data: mealsData,
+    refetch: refetchMeals,
+  } = useQuery(GET_MEALS, {
+    fetchPolicy: "cache-and-network", // 👈 Ensures fresh data
+  });
+
+  const {
+    loading: meLoading,
+    data: meData,
+    refetch: refetchMe,
+  } = useQuery(GET_ME, {
+    fetchPolicy: "cache-and-network", // 👈 Ensures fresh data
+  });
 
   const [saveMeal] = useMutation(SAVE_MEAL, { onCompleted: refetchMe });
   const [removeMeal] = useMutation(REMOVE_MEAL, { onCompleted: refetchMe });
@@ -83,6 +96,12 @@ const Dashboard = () => {
       refetchMe();
     },
   });
+
+  // 👇 Refetch meals and user data when Dashboard first mounts
+  useEffect(() => {
+    refetchMeals();
+    refetchMe();
+  }, []);
 
   if (meLoading || mealsLoading) return <p>Loading...</p>;
   if (!meData?.me || !mealsData?.meals) return <p>Error loading meals</p>;
