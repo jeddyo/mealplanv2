@@ -74,6 +74,84 @@ Develop/
 
 ---
 
+## 💻 Local Development
+
+To run this project locally, you'll need to start both the **frontend** and the **backend**.
+
+### 📦 Prerequisites
+
+- Node.js v18+
+- npm
+- MongoDB Atlas account or local MongoDB server
+- `.env` file inside the `server/` directory with the following variables:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret_key
+```
+
+---
+
+### 🔧 Backend Setup
+
+1. Navigate to the server directory:
+
+```bash
+cd server
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Start the development server:
+
+```bash
+npm run dev
+```
+
+4. Backend will be running at:
+
+```
+http://localhost:5000/graphql
+```
+
+---
+
+### 🎨 Frontend Setup
+
+1. Open a new terminal tab/window and navigate to the client directory:
+
+```bash
+cd client
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Start the Vite development server:
+
+```bash
+npm run dev
+```
+
+4. Frontend will be running at:
+
+```
+http://localhost:5173
+```
+
+---
+
+> ⚠️ **Note:** Make sure the backend is running **first** before starting the frontend. The frontend uses Apollo Client to connect to the GraphQL API at `http://localhost:5000/graphql`.
+
+---
+
 ## ✅ Requirements Checklist
 
 - [x] Use **React** for frontend
