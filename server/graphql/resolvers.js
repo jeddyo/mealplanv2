@@ -46,11 +46,7 @@ const resolvers = {
       return { token };
     },
 
-    createMeal: async (
-      _,
-      { name, ingredients, instructions, category, imageUrl },
-      context
-    ) => {
+    createMeal: async (_, { name, ingredients, instructions, category, imageUrl }, context) => {
       const token = context?.req?.headers?.authorization?.split(" ")[1];
       if (!token) throw new Error("Unauthorized");
 
@@ -66,7 +62,31 @@ const resolvers = {
       });
 
       await meal.save();
-      await meal.populate("createdBy", "username email"); // ✅ Populate here
+      await meal.populate("createdBy", "username email");
+
+      return meal;
+    },
+
+    updateMeal: async (_, { mealId, name, ingredients, instructions, category, imageUrl }, context) => {
+      const token = context?.req?.headers?.authorization?.split(" ")[1];
+      if (!token) throw new Error("Unauthorized");
+
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const meal = await Meal.findById(mealId);
+      if (!meal) throw new Error("Meal not found");
+
+      if (meal.createdBy.toString() !== decoded.userId) {
+        throw new Error("You do not have permission to edit this meal");
+      }
+
+      meal.name = name;
+      meal.ingredients = ingredients;
+      meal.instructions = instructions;
+      meal.category = category;
+      meal.imageUrl = imageUrl;
+
+      await meal.save();
+      await meal.populate("createdBy", "username email");
 
       return meal;
     },

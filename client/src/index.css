@@ -26,12 +26,21 @@ body {
 }
 
 .card {
-  background: #fff;
+  background: #ffffff;
   border-radius: 1rem;
   padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   margin-bottom: 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  position: relative;
 }
+
+/* 🔥 Hover animation */
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.1);
+}
+
 
 .meal-img {
   width: 100%;
@@ -353,4 +362,56 @@ button:hover {
 }
 .signup-btn:hover {
   background-color: #86efac;
+}
+
+.edit-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  border: none;
+  padding: 0.4rem 0.7rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.2s ease;
+}
+
+.edit-btn:hover {
+  background-color: #bae6fd;
+}
+
+@media (max-width: 768px) {
+  .dashboard-layout {
+    flex-direction: column;
+  }
+
+  .main-content,
+  .sidebar {
+    flex: 1;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 1rem;
+  }
+
+  .card {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .meal-img {
+    width: 100%;
+    height: auto;
+  }
+
+  .edit-btn {
+    top: 8px;
+    right: 8px;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
 }

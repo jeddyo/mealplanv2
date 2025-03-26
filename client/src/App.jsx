@@ -1,31 +1,28 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import Signup from "./pages/Signup";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
-import NotFound from "./pages/NotFound";
-import { useContext } from "react";
-import { AuthContext } from "./context/AuthContext";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Dashboard from "./pages/Dashboard";
 import CreateMeal from "./pages/CreateMeal";
+import EditMeal from "./pages/EditMeal";
+import { AuthProvider } from "./context/AuthContext";
 
-
-function App() {
-  const { token } = useContext(AuthContext);
-
+const App = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={token ? <Navigate to="/dashboard" /> : <Login />} />
-        <Route path="/signup" element={token ? <Navigate to="/dashboard" /> : <Signup />} />
-        <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="*" element={<NotFound />} />
-        <Route path="/create" element={token ? <CreateMeal /> : <Navigate to="/login" />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/create" element={<CreateMeal />} />
+          <Route path="/edit/:mealId" element={<EditMeal />} />
+        </Routes>
+      </AuthProvider>
     </Router>
   );
-}
-
-<div className="bg-pink-200 text-black p-4">Tailwind test</div>
+};
 
 export default App;
